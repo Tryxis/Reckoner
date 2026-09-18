@@ -52,16 +52,3 @@ worker won't register, so use a server if you want to test offline behaviour.
 
 ## Find it on GitHub Pages
 https://tryxis.github.io/Reckoner/
-
----
-
-The app contains no game rules text, no datasheets and no publisher artwork — it
-only does arithmetic on numbers you type in, which is the safe side of the line.
-Keep it that way in the store listing: no publisher trademarks in the app name,
-icon, screenshots or description, and describe it generically. Games Workshop's
-[IP guidelines](https://www.games-workshop.com/en-GB/Intellectual-Property-Guidelines)
-are worth reading in full before you put anything on a store.
-
-
-
-MIT licensed. Built for David Butterworth.
