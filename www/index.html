@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reckoner</title>
+<meta name="description" content="Attack-sequence probability calculator for tabletop wargames: needed rolls, expected damage and models slain.">
+<meta name="theme-color" content="#171b1e">
+<meta name="color-scheme" content="light dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Reckoner">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<link rel="stylesheet" href="./app.css">
+</head>
+<body>
+
+<header class="appbar">
+  <div>
+    <h1>Reckoner</h1>
+    <span class="tag">Attack sequence calculator</span>
+  </div>
+  <button class="iconbtn" id="themeBtn" type="button" aria-label="Switch between light and dark">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M21.4 12h-2.2M4.8 12H2.6M18.6 5.4l-1.6 1.6M7 17l-1.6 1.6M18.6 18.6L17 17M7 7 5.4 5.4"/></svg>
+  </button>
+</header>
+
+<div class="wrap">
+ <div class="cols">
+
+  <!-- ============ inputs ============ -->
+  <div>
+    <section class="panel">
+      <h2>Attacking weapon <span class="hint">Profile</span></h2>
+      <div class="body">
+        <div class="stats">
+          <div class="stat"><label for="i-a">Attacks</label>
+            <div class="stepper"><button type="button" data-step="-1" data-for="i-a" aria-label="Fewer attacks">&minus;</button><input id="i-a" type="number" inputmode="numeric" min="1" max="200" step="1" value="10"><button type="button" data-step="1" data-for="i-a" aria-label="More attacks">+</button></div>
+          </div>
+          <div class="stat"><label for="i-bs">BS / WS</label>
+            <div class="stepper"><button type="button" data-step="-1" data-for="i-bs" aria-label="Better skill">&minus;</button><input id="i-bs" type="number" inputmode="numeric" min="2" max="6" step="1" value="3"><button type="button" data-step="1" data-for="i-bs" aria-label="Worse skill">+</button></div>
+          </div>
+          <div class="stat"><label for="i-s">Strength</label>
+            <div class="stepper"><button type="button" data-step="-1" data-for="i-s" aria-label="Less strength">&minus;</button><input id="i-s" type="number" inputmode="numeric" min="1" max="30" step="1" value="8"><button type="button" data-step="1" data-for="i-s" aria-label="More strength">+</button></div>
+          </div>
+          <div class="stat"><label for="i-ap">AP</label>
+            <div class="stepper"><button type="button" data-step="-1" data-for="i-ap" aria-label="Less AP">&minus;</button><input id="i-ap" type="number" inputmode="numeric" min="0" max="6" step="1" value="2"><button type="button" data-step="1" data-for="i-ap" aria-label="More AP">+</button></div>
+          </div>
+          <div class="stat wide"><label for="i-d">Damage</label>
+            <div class="stepper"><input id="i-d" type="text" inputmode="text" value="3" spellcheck="false" autocapitalize="off" autocomplete="off"></div>
+            <div class="quick" id="dmgQuick"></div>
+          </div>
+        </div>
+        <p class="note">Enter AP as a positive number &mdash; AP&nbsp;&minus;2 is <b>2</b>. Damage takes dice notation: <b>D3</b>, <b>D6+1</b>, <b>2D6</b>.</p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Target unit <span class="hint">Defence</span></h2>
+      <div class="body">
+        <div class="stats">
+          <div class="stat"><label for="i-t">Toughness</label>
+            <div class="stepper"><button type="button" data-step="-1" data-for="i-t" aria-label="Less toughness">&minus;</button><input id="i-t" type="number" inputmode="numeric" min="1" max="30" step="1" value="5"><button type="button" data-step="1" data-for="i-t" aria-label="More toughness">+</button></div>
+          </div>
+          <div class="stat"><label for="i-sv">Save</label>
+            <div class="stepper"><button type="button" data-step="-1" data-for="i-sv" aria-label="Better save">&minus;</button><input id="i-sv" type="number" inputmode="numeric" min="2" max="7" step="1" value="3"><button type="button" data-step="1" data-for="i-sv" aria-label="Worse save">+</button></div>
+          </div>
+          <div class="stat"><label for="i-inv">Invuln</label>
+            <div class="stepper"><button type="button" data-step="-1" data-for="i-inv" aria-label="Better invulnerable save">&minus;</button><input id="i-inv" type="number" inputmode="numeric" min="2" max="6" step="1" placeholder="&mdash;"><button type="button" data-step="1" data-for="i-inv" aria-label="Worse invulnerable save">+</button></div>
+          </div>
+          <div class="stat"><label for="i-w">Wounds</label>
+            <div class="stepper"><button type="button" data-step="-1" data-for="i-w" aria-label="Fewer wounds">&minus;</button><input id="i-w" type="number" inputmode="numeric" min="1" max="40" step="1" value="3"><button type="button" data-step="1" data-for="i-w" aria-label="More wounds">+</button></div>
+          </div>
+          <div class="stat span"><label for="i-models">Models in unit</label>
+            <div class="stepper"><button type="button" data-step="-1" data-for="i-models" aria-label="Fewer models">&minus;</button><input id="i-models" type="number" inputmode="numeric" min="1" max="30" step="1" value="5"><button type="button" data-step="1" data-for="i-models" aria-label="More models">+</button></div>
+          </div>
+        </div>
+        <p class="note">Leave <b>Invuln</b> empty when the target has none.</p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Keywords &amp; modifiers
+        <span style="display:flex;align-items:baseline;gap:2px">
+          <span class="hint" id="selCount">none</span>
+          <button type="button" class="hint" id="clearBtn">Clear</button>
+        </span>
+      </h2>
+      <div class="body" id="chipHost"></div>
+    </section>
+
+    <section class="panel">
+      <h2>How the maths works <span class="hint">Reference</span></h2>
+      <div class="body rules">
+        <ul>
+          <li>Wound chart: <b>2+</b> if S is double T or more, <b>3+</b> if S beats T, <b>4+</b> if equal, <b>5+</b> if S is lower, <b>6+</b> if S is half T or less. Unmodified 1s always fail; unmodified 6s are critical hits and critical wounds, and always succeed.</li>
+          <li><b>Benefit of cover</b> is &minus;1 to the attacker's ballistic skill, so it does nothing against melee and never touches an invulnerable save. Stealth grants it in the open.</li>
+          <li>Ballistic-skill, hit-roll and wound-roll modifiers are each capped at &plusmn;1 and tracked separately, so cover plus a &minus;1 to hit stacks to an effective &minus;2.</li>
+          <li>The invulnerable save is used whenever it beats the AP-modified armour save. Devastating Wounds bypass both, leaving only Feel No Pain.</li>
+          <li>Damage resolves as: roll, add Melta, halve and round up, subtract reduction, minimum 1. Feel No Pain is rolled per point, and damage left over when a model dies is lost rather than spilling onto the next.</li>
+          <li>Models slain comes from 20,000 simulated attack sequences, so the last decimal drifts slightly between runs.</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ results ============ -->
+  <div class="scrim" id="scrim" hidden></div>
+  <aside class="results" id="results" aria-label="Results">
+    <button class="grab" id="grabBtn" type="button" aria-expanded="false" aria-controls="sheetbody">
+      <span class="hbar"></span>
+      <span class="caption" id="grabCaption">Tap for full breakdown</span>
+    </button>
+    <div class="sheetbody" id="sheetbody">
+      <div class="pips">
+        <div class="pip"><span class="k">Hit</span><div class="v" id="p-hit">3+</div><div class="n" id="n-hit"></div></div>
+        <div class="pip"><span class="k">Wound</span><div class="v" id="p-wound">3+</div><div class="n" id="n-wound"></div></div>
+        <div class="pip"><span class="k">Save</span><div class="v" id="p-save">5+</div><div class="n" id="n-save"></div></div>
+        <div class="pip slain"><span class="k">Slain</span><div class="v" id="p-slain">2.9</div><div class="n" id="n-slain">of 5</div></div>
+      </div>
+
+      <div class="detail">
+        <div class="callout">
+          <span class="k">Damage per unsaved wound</span>
+          <span class="v" id="p-dmg">3</span>
+        </div>
+        <div class="flagline" id="flags"></div>
+
+        <div class="subhead">Expected output</div>
+        <div class="chain">
+          <div class="step"><span class="lab">Attack dice</span><span class="num" id="r-att">10</span></div>
+          <div class="step"><span class="lab">Hits <em id="e-crith"></em></span><span class="num" id="r-hits">6.67</span></div>
+          <div class="step"><span class="lab">Wounds <em id="e-critw"></em></span><span class="num" id="r-wounds">4.44</span></div>
+          <div class="step"><span class="lab">Unsaved wounds</span><span class="num" id="r-unsaved">2.96</span></div>
+          <div class="step"><span class="lab">Damage inflicted <em id="e-fnp"></em></span><span class="num" id="r-dmg">8.9</span></div>
+          <div class="step headline"><span class="lab">Models slain</span><span class="num" id="r-slain">2.9</span></div>
+        </div>
+
+        <div class="subhead">Chance of slaying exactly</div>
+        <div id="dist"></div>
+        <div class="callout" style="margin-top:11px">
+          <span class="k">Unit wiped</span>
+          <span class="v" id="p-wipe">&mdash;</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+ </div>
+</div>
+
+<script src="./app.js"></script>
+</body>
+</html>

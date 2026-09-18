@@ -1,0 +1,18 @@
+{
+  "appId": "io.github.tryxis.reckoner",
+  "appName": "Reckoner",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "backgroundColor": "#11151a",
+  "ios": {
+    "contentInset": "always",
+    "backgroundColor": "#11151a"
+  },
+  "android": {
+    "backgroundColor": "#11151a",
+    "allowMixedContent": false
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}
